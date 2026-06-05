@@ -1,16 +1,9 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
 
 export default function StartPage() {
   const router = useRouter()
-
-  useEffect(() => {
-    if (localStorage.getItem("moodrai-started")) {
-      router.replace("/journal")
-    }
-  }, [router])
 
   function handleStart() {
     localStorage.setItem("moodrai-started", "true")
