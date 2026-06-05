@@ -1,5 +1,6 @@
 "use client"
 
+import { useRef, useState } from "react"
 import { Mood } from "@/lib/types"
 import { BLOB_RADIUS, MOOD_AURA, fallbackAura } from "@/components/mood/MoodBlob"
 
@@ -82,22 +83,38 @@ function FaceSVG({ moodId, ink }: { moodId: string; ink: string }) {
 }
 
 export function MoodSelector({ moods, selected, onSelect }: MoodSelectorProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [atEnd, setAtEnd] = useState(false)
+
+  function handleScroll() {
+    const el = scrollRef.current
+    if (!el) return
+    setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 8)
+  }
+
   return (
     <div className="relative overflow-hidden" style={{ marginLeft: "-4px", marginRight: "-4px", paddingLeft: "4px" }}>
-      {/* fade + arrow — wskazuje scrollowanie */}
+      {/* fade + arrow — znika gdy doscrollowane do końca */}
+      {!atEnd && (
+        <div
+          className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 flex items-center justify-end"
+          style={{
+            width: 68,
+            paddingRight: "10px",
+            background: "linear-gradient(to right, transparent, #EDEAE5 52%)",
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ opacity: 0.35, flexShrink: 0 }}>
+            <path d="M4.5 2.5l4 4-4 4" stroke="#1C1A18" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      )}
       <div
-        className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 flex items-center justify-end"
-        style={{
-          width: 68,
-          paddingRight: "10px",
-          background: "linear-gradient(to right, transparent, #EDEAE5 52%)",
-        }}
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide px-1"
+        style={{ paddingRight: "4px" }}
       >
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ opacity: 0.35, flexShrink: 0 }}>
-          <path d="M4.5 2.5l4 4-4 4" stroke="#1C1A18" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </div>
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide px-1" style={{ paddingRight: "4px" }}>
         {moods.map((mood) => {
           const active = selected === mood.id
           const gradient = MOOD_AURA[mood.id] ?? fallbackAura(mood.color)
