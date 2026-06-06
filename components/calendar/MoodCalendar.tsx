@@ -90,7 +90,6 @@ function MiniMoodBlob({ mood }: { mood: Mood }) {
         filter: "blur(4px)",
         opacity: 0.85,
       }} />
-      <MiniAuraFace moodId={mood.id} ink="#1C1A18" />
     </div>
   )
 }

@@ -139,7 +139,6 @@ export function MoodSelector({ moods, selected, onSelect }: MoodSelectorProps) {
                     transition: "all 0.25s ease",
                   }}
                 />
-                <FaceSVG moodId={mood.id} ink={active ? "rgba(255,255,255,0.95)" : "#1C1A18"} />
               </div>
               <span
                 className="text-[9px] tracking-[0.08em] uppercase"
