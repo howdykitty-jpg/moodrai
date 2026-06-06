@@ -12,7 +12,7 @@ export default function StartPage() {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex flex-col items-center overflow-hidden"
+      className="absolute inset-0 z-[60] flex flex-col items-center overflow-hidden"
       style={{ backgroundColor: "#EDEAE5" }}
     >
       <style>{`
