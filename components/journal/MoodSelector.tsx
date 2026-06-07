@@ -94,20 +94,22 @@ export function MoodSelector({ moods, selected, onSelect }: MoodSelectorProps) {
 
   return (
     <div className="relative overflow-hidden" style={{ marginLeft: "-4px", marginRight: "-4px", paddingLeft: "4px" }}>
-      {/* fade + arrow — znika gdy doscrollowane do końca */}
+      {/* fade + arrow — klikalny, znika gdy doscrollowane do końca */}
       {!atEnd && (
-        <div
-          className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 flex items-center justify-end"
+        <button
+          type="button"
+          onClick={() => scrollRef.current?.scrollBy({ left: 120, behavior: "smooth" })}
+          className="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-end"
           style={{
             width: 68,
             paddingRight: "10px",
             background: "linear-gradient(to right, transparent, #EDEAE5 52%)",
           }}
         >
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ opacity: 0.35, flexShrink: 0 }}>
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ opacity: 0.5, flexShrink: 0 }}>
             <path d="M4.5 2.5l4 4-4 4" stroke="#1C1A18" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-        </div>
+        </button>
       )}
       <div
         ref={scrollRef}
