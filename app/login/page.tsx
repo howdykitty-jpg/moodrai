@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { supabase } from "@/lib/supabase"
+
+type Tab = "signin" | "register"
 
 function clearLocalStorage() {
   localStorage.removeItem("moodrai-store")
@@ -13,33 +14,36 @@ function clearLocalStorage() {
 
 export default function LoginPage() {
   const router = useRouter()
+  const [tab, setTab] = useState<Tab>("signin")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-
-  async function handleGoogle() {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${location.origin}/auth/callback` },
-    })
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError("")
     setLoading(true)
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-      return
+    if (tab === "signin") {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
+      }
+      clearLocalStorage()
+      router.push("/journal")
+    } else {
+      const { error } = await supabase.auth.signUp({ email, password })
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
+      }
+      clearLocalStorage()
+      router.push("/journal")
     }
-
-    clearLocalStorage()
-    router.push("/journal")
   }
 
   return (
@@ -59,7 +63,7 @@ export default function LoginPage() {
       `}</style>
 
       {/* Blob */}
-      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "32%" }}>
+      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "2%" }}>
         <div
           style={{
             width: 340,
@@ -78,7 +82,7 @@ export default function LoginPage() {
         />
       </div>
 
-      {/* Text */}
+      {/* Title */}
       <div
         className="relative z-10 flex flex-col items-center justify-center text-center px-10"
         style={{ flex: 1 }}
@@ -103,6 +107,38 @@ export default function LoginPage() {
 
       {/* Form */}
       <div className="relative z-10 w-full px-7 pb-14 flex flex-col gap-4 max-w-sm">
+
+        {/* Tab toggle */}
+        <div
+          className="flex rounded-full p-1"
+          style={{ background: "rgba(210,218,245,0.22)", border: "1px solid rgba(160,175,230,0.25)" }}
+        >
+          <button
+            type="button"
+            onClick={() => { setTab("signin"); setError("") }}
+            className="flex-1 rounded-full py-2 text-[10px] tracking-[0.18em] uppercase transition-all duration-200"
+            style={{
+              fontFamily: "var(--font-sans)",
+              backgroundColor: tab === "signin" ? "#1C1A18" : "transparent",
+              color: tab === "signin" ? "rgba(255,255,255,0.95)" : "#6B6660",
+            }}
+          >
+            Sign in
+          </button>
+          <button
+            type="button"
+            onClick={() => { setTab("register"); setError("") }}
+            className="flex-1 rounded-full py-2 text-[10px] tracking-[0.18em] uppercase transition-all duration-200"
+            style={{
+              fontFamily: "var(--font-sans)",
+              backgroundColor: tab === "register" ? "#1C1A18" : "transparent",
+              color: tab === "register" ? "rgba(255,255,255,0.95)" : "#6B6660",
+            }}
+          >
+            Create account
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             type="email"
@@ -126,7 +162,7 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             required
-            autoComplete="current-password"
+            autoComplete={tab === "signin" ? "current-password" : "new-password"}
             className="w-full outline-none text-[13px] rounded-lg px-4 py-[14px] placeholder:text-[rgba(80,90,140,0.45)] transition-all duration-200 focus:bg-[rgba(200,210,240,0.25)]"
             style={{
               fontFamily: "var(--font-sans)",
@@ -148,57 +184,19 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading || !email || !password}
-            className="mt-2 w-full rounded-full py-4 text-[10px] tracking-[0.22em] uppercase transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_32px_8px_rgba(100,110,200,0.22)] active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed"
+            disabled={loading}
+            className="mt-2 w-full rounded-full py-4 text-[10px] tracking-[0.22em] uppercase transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_32px_8px_rgba(100,110,200,0.22)] active:scale-[0.97]"
             style={{
               fontFamily: "var(--font-sans)",
               backgroundColor: "#1C1A18",
               color: "rgba(255,255,255,0.95)",
             }}
           >
-            {loading ? "Signing in…" : "Sign in"}
+            {loading
+              ? tab === "signin" ? "Signing in…" : "Creating account…"
+              : tab === "signin" ? "Sign in" : "Create account"}
           </button>
         </form>
-
-        <div className="flex items-center gap-3 my-1">
-          <div className="flex-1 h-px" style={{ background: "rgba(160,175,230,0.25)" }} />
-          <span className="text-[10px] tracking-[0.12em]" style={{ fontFamily: "var(--font-sans)", color: "rgba(60,55,48,0.40)" }}>or</span>
-          <div className="flex-1 h-px" style={{ background: "rgba(160,175,230,0.25)" }} />
-        </div>
-
-        <button
-          type="button"
-          onClick={handleGoogle}
-          className="w-full rounded-full py-4 text-[10px] tracking-[0.18em] uppercase transition-all duration-300 hover:scale-[1.02] active:scale-[0.97] flex items-center justify-center gap-2.5"
-          style={{
-            fontFamily: "var(--font-sans)",
-            background: "rgba(210,218,245,0.18)",
-            border: "1px solid rgba(160,175,230,0.30)",
-            color: "#1C1A18",
-          }}
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          Continue with Google
-        </button>
-
-        <p
-          className="text-center text-[11px] mt-2"
-          style={{ fontFamily: "var(--font-sans)", color: "#6B6660", letterSpacing: "0.06em" }}
-        >
-          No account?{" "}
-          <Link
-            href="/register"
-            style={{ color: "#3A3630" }}
-            className="underline underline-offset-2"
-          >
-            Create one
-          </Link>
-        </p>
       </div>
     </div>
   )
