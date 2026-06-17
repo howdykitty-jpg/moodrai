@@ -217,7 +217,7 @@ export default function JournalPage() {
           >
             Nothing here yet
           </p>
-          <div className="relative mb-6" style={{ width: 80, height: 80 }}>
+          <div className="relative mb-6" style={{ width: 80, height: 80, marginRight: 60 }}>
             <button
               type="button"
               onClick={toggleRecording}
@@ -235,8 +235,8 @@ export default function JournalPage() {
               onClick={() => fileInputRef.current?.click()}
               className="absolute flex h-11 w-11 items-center justify-center rounded-full transition-transform duration-200 active:scale-95"
               style={{
-                top: -14,
-                right: -20,
+                top: -28,
+                right: -68,
                 background: "var(--btn-bg)",
                 color: "var(--btn-fg)",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
