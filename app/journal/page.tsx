@@ -217,7 +217,7 @@ export default function JournalPage() {
           >
             Nothing here yet
           </p>
-          <div className="relative mb-6" style={{ width: 80, height: 80 }}>
+          <div className="flex items-center gap-5 mb-6">
             <button
               type="button"
               onClick={toggleRecording}
@@ -233,16 +233,13 @@ export default function JournalPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute flex h-11 w-11 items-center justify-center rounded-full transition-transform duration-200 active:scale-95"
+              className="flex h-16 w-16 items-center justify-center rounded-full transition-transform duration-200 active:scale-95"
               style={{
-                top: -28,
-                right: -68,
                 background: "var(--btn-bg)",
                 color: "var(--btn-fg)",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
               }}
             >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
               </svg>
             </button>
