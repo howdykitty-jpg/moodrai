@@ -290,6 +290,24 @@ export default function JournalPage() {
         )
       )}
 
+      {/* Floating attach button */}
+      <button
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        className="fixed right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-200 active:scale-95"
+        style={{
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 5.5rem)",
+          background: "var(--surface-2)",
+          border: "1px solid var(--border-2)",
+          color: attachment ? "var(--fg)" : "var(--fg-3)",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+        </svg>
+      </button>
+
       {/* Bottom input bar — fixed above the nav */}
       <div
         className="fixed left-0 right-0 z-40 px-5 pb-3 pt-2"

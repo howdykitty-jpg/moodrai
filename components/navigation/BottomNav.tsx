@@ -17,29 +17,21 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-sm md:static md:z-auto md:backdrop-blur-none" style={{ borderTop: "1px solid var(--border-2)", background: "var(--nav-bg)" }}>
-      <div className="mx-auto flex max-w-md items-center justify-around px-2 py-2.5">
-        {nav.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href
-          return (
-            <Link
-              key={href}
-              href={href}
-              className="flex flex-col items-center gap-1 px-3 py-1 transition-all duration-200"
-              style={{ opacity: active ? 1 : 0.45 }}
+      <div className="mx-auto flex max-w-md items-center justify-around px-2 py-2.5 pointer-events-none opacity-30">
+        {nav.map(({ href, label, icon: Icon }) => (
+          <div
+            key={href}
+            className="flex flex-col items-center gap-1 px-3 py-1"
+          >
+            <Icon active={false} />
+            <span
+              className="text-[9px] tracking-[0.12em] uppercase"
+              style={{ fontFamily: "var(--font-sans)", color: "var(--fg)" }}
             >
-              <Icon active={active} />
-              <span
-                className="text-[9px] tracking-[0.12em] uppercase"
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  color: "var(--fg)",
-                }}
-              >
-                {label}
-              </span>
-            </Link>
-          )
-        })}
+              {label}
+            </span>
+          </div>
+        ))}
       </div>
     </nav>
   )
