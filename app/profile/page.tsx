@@ -27,7 +27,7 @@ export default function ProfilePage() {
 
   async function handleSignOut() {
     await supabase.auth.signOut()
-    router.push("/login")
+    router.push("/start")
   }
 
   function saveName() {
