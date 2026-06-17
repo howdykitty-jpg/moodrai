@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useStore } from "@/store/useStore"
 import { DateStrip } from "@/components/ui/DateStrip"
 import { MoodBlob } from "@/components/mood/MoodBlob"
@@ -25,8 +25,9 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState(today)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState("")
+  const [editImgSrc, setEditImgSrc] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
-  const [activeCardId, setActiveCardId] = useState<string | null>(null)
+  const editFileRef = useRef<HTMLInputElement | null>(null)
 
   const dotDates = new Set(entries.map((e) => e.date))
   const dateEntries = entries
@@ -40,16 +41,37 @@ export default function CalendarPage() {
     day: "numeric",
   })
 
-  function startEdit(id: string, currentText: string) {
+  function startEdit(id: string, currentText: string, currentImgSrc: string | null) {
     setEditingId(id)
     setEditText(currentText)
+    setEditImgSrc(currentImgSrc)
     setConfirmDeleteId(null)
   }
 
-  function saveEdit(entry: { id: string; content: string }) {
-    const { imgSrc } = parseContent(entry.content)
-    updateEntry(entry.id, { content: buildContent(editText.trim(), imgSrc) })
+  function saveEdit(id: string) {
+    updateEntry(id, { content: buildContent(editText.trim(), editImgSrc) })
     setEditingId(null)
+  }
+
+  function handleEditFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ""
+    if (!file || !file.type.startsWith("image/")) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const img = new Image()
+      img.onload = () => {
+        const maxW = 900
+        const scale = Math.min(1, maxW / img.width)
+        const canvas = document.createElement("canvas")
+        canvas.width = Math.round(img.width * scale)
+        canvas.height = Math.round(img.height * scale)
+        canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height)
+        setEditImgSrc(canvas.toDataURL("image/jpeg", 0.8))
+      }
+      img.src = reader.result as string
+    }
+    reader.readAsDataURL(file)
   }
 
   function handleDelete(id: string) {
@@ -105,7 +127,6 @@ export default function CalendarPage() {
                 style={{ border: "1px solid var(--border-2)", background: "var(--surface-2)" }}
                 onClick={() => {
                   if (editingId === entry.id || confirmDeleteId === entry.id) return
-                  setActiveCardId((prev) => (prev === entry.id ? null : entry.id))
                 }}
               >
                 {/* Header */}
@@ -126,9 +147,9 @@ export default function CalendarPage() {
                       minute: "2-digit",
                     })}
                   </span>
-                  <div className={`ml-auto flex items-center gap-3 transition-opacity duration-150 ${isEditing || isConfirmDelete || activeCardId === entry.id ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+                  <div className="ml-auto flex items-center gap-3">
                     <button
-                      onClick={(e) => { e.stopPropagation(); isEditing ? setEditingId(null) : startEdit(entry.id, text) }}
+                      onClick={(e) => { e.stopPropagation(); isEditing ? setEditingId(null) : startEdit(entry.id, text, imgSrc) }}
                       style={{ color: isEditing ? "var(--fg)" : "var(--fg-3)" }}
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -189,9 +210,45 @@ export default function CalendarPage() {
                         color: "var(--fg)",
                       }}
                     />
+                    {/* Photo editing */}
+                    {editImgSrc ? (
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={editImgSrc}
+                          alt=""
+                          style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 10 }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => editFileRef.current?.click()}
+                          className="rounded-full px-3 py-1.5 text-[11px] tracking-[0.08em] uppercase"
+                          style={{ border: "1px solid var(--border-2)", color: "var(--fg-2)", fontFamily: "var(--font-sans)" }}
+                        >
+                          Replace
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditImgSrc(null)}
+                          className="rounded-full px-3 py-1.5 text-[11px] tracking-[0.08em] uppercase"
+                          style={{ border: "1px solid var(--border-2)", color: "var(--fg-3)", fontFamily: "var(--font-sans)" }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => editFileRef.current?.click()}
+                        className="self-start rounded-full px-3 py-1.5 text-[11px] tracking-[0.08em] uppercase"
+                        style={{ border: "1px solid var(--border-2)", color: "var(--fg-3)", fontFamily: "var(--font-sans)" }}
+                      >
+                        + Add photo
+                      </button>
+                    )}
+                    <input ref={editFileRef} type="file" accept="image/*" onChange={handleEditFile} className="hidden" />
                     <div className="flex gap-2">
                       <button
-                        onClick={() => saveEdit(entry)}
+                        onClick={() => saveEdit(entry.id)}
                         className="rounded-full px-4 py-2 text-[11px] tracking-[0.1em] uppercase"
                         style={{ background: "var(--fg)", color: "var(--btn-fg)", fontFamily: "var(--font-sans)" }}
                       >
