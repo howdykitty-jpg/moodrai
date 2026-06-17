@@ -217,7 +217,7 @@ export default function JournalPage() {
           >
             Nothing here yet
           </p>
-          <div className="relative mb-6" style={{ width: 80, height: 80, marginRight: 60 }}>
+          <div className="relative mb-6" style={{ width: 80, height: 80 }}>
             <button
               type="button"
               onClick={toggleRecording}
