@@ -69,7 +69,7 @@ export default function RegisterPage() {
       `}</style>
 
       {/* Blob */}
-      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "32%" }}>
+      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "15%" }}>
         <div
           style={{
             width: 340,
@@ -109,7 +109,7 @@ export default function RegisterPage() {
 
       {/* Form */}
       <div className="relative z-10 w-full px-7 pb-12 flex flex-col gap-3 max-w-sm">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             type="email"
             value={email}
@@ -117,11 +117,12 @@ export default function RegisterPage() {
             placeholder="Email"
             required
             autoComplete="email"
-            className="w-full bg-transparent outline-none text-[13px] pb-2.5 placeholder:text-[rgba(60,55,48,0.40)]"
+            className="w-full outline-none text-[13px] rounded-lg px-4 py-[14px] placeholder:text-[rgba(80,90,140,0.45)] transition-all duration-200 focus:bg-[rgba(200,210,240,0.25)]"
             style={{
               fontFamily: "var(--font-sans)",
               color: "#1C1A18",
-              borderBottom: "1px solid rgba(60,55,48,0.30)",
+              background: "rgba(210,218,245,0.18)",
+              border: "1px solid rgba(160,175,230,0.30)",
               letterSpacing: "0.02em",
             }}
           />
@@ -132,11 +133,12 @@ export default function RegisterPage() {
             placeholder="Password (min. 6 characters)"
             required
             autoComplete="new-password"
-            className="w-full bg-transparent outline-none text-[13px] pb-2.5 placeholder:text-[rgba(60,55,48,0.40)]"
+            className="w-full outline-none text-[13px] rounded-lg px-4 py-[14px] placeholder:text-[rgba(80,90,140,0.45)] transition-all duration-200 focus:bg-[rgba(200,210,240,0.25)]"
             style={{
               fontFamily: "var(--font-sans)",
               color: "#1C1A18",
-              borderBottom: "1px solid rgba(60,55,48,0.30)",
+              background: "rgba(210,218,245,0.18)",
+              border: "1px solid rgba(160,175,230,0.30)",
               letterSpacing: "0.02em",
             }}
           />

@@ -59,7 +59,7 @@ export default function LoginPage() {
       `}</style>
 
       {/* Blob */}
-      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "32%" }}>
+      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "15%" }}>
         <div
           style={{
             width: 340,
@@ -93,16 +93,12 @@ export default function LoginPage() {
           className="mt-5 leading-loose text-[#3A3630]"
           style={{ fontSize: "0.72rem", letterSpacing: "0.1em" }}
         >
-          Understand your mood.
-          <br />
-          Grow with everyday.
-          <br />
-          See your Aura.
+          Start your journey.
         </p>
       </div>
 
       {/* Form */}
-      <div className="relative z-10 w-full px-7 pb-14 flex flex-col gap-4 max-w-sm">
+      <div className="relative z-10 w-full px-7 pb-12 flex flex-col gap-3 max-w-sm">
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             type="email"
