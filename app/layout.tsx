@@ -1,7 +1,10 @@
 import type { Metadata } from "next"
 import { Cormorant_Garamond, Inter } from "next/font/google"
 import "./globals.css"
+import { TopNav } from "@/components/navigation/TopNav"
 import { BottomNav } from "@/components/navigation/BottomNav"
+import { StoreProvider } from "@/components/StoreProvider"
+import { ThemeProvider } from "@/components/ThemeProvider"
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -23,16 +26,19 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${cormorant.variable} ${inter.variable} antialiased`}>
-      <body className="bg-[#DDD9D0] text-[#1C1A18]">
+      <body className="text-[var(--fg)]" style={{ background: "var(--background)" }}>
+        <ThemeProvider>
+        <StoreProvider>
 
         {/* ── Mobile: pełny ekran ── */}
-        <div className="flex min-h-dvh flex-col md:hidden bg-[#EDEAE5]">
-          <main className="flex-1 overflow-y-auto pb-24">{children}</main>
-          <BottomNav />
+        <div className="flex min-h-dvh flex-col md:hidden" style={{ background: "var(--background)" }}>
+          <div style={{ height: "max(44px, env(safe-area-inset-top, 44px))", flexShrink: 0 }} />
+          <TopNav />
+          <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
 
         {/* ── Desktop: ramka telefonu ── */}
-        <div className="hidden md:flex min-h-screen items-start justify-center py-10">
+        <div className="hidden md:flex min-h-screen items-start justify-center py-10" style={{ background: "var(--surface-2)" }}>
           <div
             style={{
               position: "relative",
@@ -58,10 +64,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 height: "100%",
                 borderRadius: 42,
                 overflow: "hidden",
-                background: "#EDEAE5",
+                background: "var(--background)",
                 position: "relative",
                 display: "flex",
                 flexDirection: "column",
+                transform: "translateZ(0)",
               }}
             >
               {/* Status bar */}
@@ -78,19 +85,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   pointerEvents: "none",
                 }}
               >
-                <span style={{ fontSize: 15, fontWeight: 600, color: "#1C1917", letterSpacing: "-0.3px", fontFamily: "sans-serif" }}>9:41</span>
+                <span style={{ fontSize: 15, fontWeight: 600, color: "var(--fg)", letterSpacing: "-0.3px", fontFamily: "sans-serif" }}>9:41</span>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <svg width="17" height="12" viewBox="0 0 17 12" fill="#1C1917">
+                  <svg width="17" height="12" viewBox="0 0 17 12" fill="var(--fg)">
                     <rect x="0" y="7" width="3" height="5" rx="0.8" opacity="0.4"/>
                     <rect x="4.5" y="4.5" width="3" height="7.5" rx="0.8" opacity="0.6"/>
                     <rect x="9" y="2" width="3" height="10" rx="0.8" opacity="0.8"/>
                     <rect x="13.5" y="0" width="3" height="12" rx="0.8"/>
                   </svg>
-                  <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#1C1917" strokeLinecap="round">
+                  <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="var(--fg)" strokeLinecap="round">
                     <path d="M1 4.5C3.8 1.8 12.2 1.8 15 4.5" strokeWidth="1.4" opacity="0.4"/>
                     <path d="M3.2 6.8C5 5 11 5 12.8 6.8" strokeWidth="1.4" opacity="0.7"/>
                     <path d="M5.5 9C6.5 8 9.5 8 10.5 9" strokeWidth="1.4"/>
-                    <circle cx="8" cy="11" r="1" fill="#1C1917" stroke="none"/>
+                    <circle cx="8" cy="11" r="1" fill="var(--fg)" stroke="none"/>
                   </svg>
                   <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <div style={{ width: 25, height: 12, border: "1.5px solid #1C1917", borderRadius: 3, padding: 2 }}>
@@ -115,15 +122,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 }}
               />
 
-              {/* Treść aplikacji */}
-              <div style={{ flex: 1, overflowY: "auto", paddingTop: 44, position: "relative" }}>
-                <main style={{ minHeight: "100%" }}>{children}</main>
-                <BottomNav />
+              {/* Spacer pod status bar + dynamic island */}
+              <div style={{ height: 52, flexShrink: 0 }} />
+
+              {/* TopNav — poza scrollem, przytwierdzony pod status barem */}
+              <TopNav />
+
+              {/* Treść aplikacji — scrollowalna */}
+              <div style={{ flex: 1, overflowY: "auto", position: "relative" }}>
+                <main>{children}</main>
               </div>
             </div>
           </div>
         </div>
 
+        </StoreProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

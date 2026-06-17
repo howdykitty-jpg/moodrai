@@ -4,19 +4,19 @@ import { useStore } from "@/store/useStore"
 import { EmotionalTimeline } from "@/components/timeline/EmotionalTimeline"
 
 export default function TimelinePage() {
-  const { entries, settings } = useStore()
+  const { entries, settings, hydrated } = useStore()
 
   return (
-    <div className="px-5 pt-12 pb-6">
-      <div className="mb-8">
-        <h1 className="text-[2.6rem] font-light leading-tight tracking-tight text-[#1C1917]" style={{ fontFamily: "var(--font-serif)" }}>
-          Timeline
-        </h1>
-        <p className="mt-1 text-[13px] text-[#3A3630]" style={{ fontFamily: "var(--font-sans)" }}>
-          Your emotional journey, day by day.
-        </p>
-      </div>
-      <EmotionalTimeline entries={entries} moods={settings.moods} />
+    <div className="px-5 pt-8 pb-6">
+      {!hydrated ? (
+        <div className="flex flex-col gap-3 pt-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-14 rounded-2xl animate-pulse" style={{ background: "var(--border-2)" }} />
+          ))}
+        </div>
+      ) : (
+        <EmotionalTimeline entries={entries} moods={settings.moods} />
+      )}
     </div>
   )
 }

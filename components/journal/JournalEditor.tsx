@@ -25,7 +25,7 @@ export function JournalEditor({ content, onChange }: JournalEditorProps) {
     content,
     editorProps: {
       attributes: {
-        class: "min-h-[140px] outline-none text-[15px] leading-[1.75] text-[#1C1917]",
+        class: "min-h-[140px] outline-none text-[15px] leading-[1.75] text-[var(--fg)]",
         style: "font-family: var(--font-sans);",
       },
     },
@@ -87,9 +87,9 @@ export function JournalEditor({ content, onChange }: JournalEditorProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-[#DDD9D0] bg-[#F5F2EC] px-5 py-4">
+    <div className="rounded-2xl px-5 py-4" style={{ border: "1px solid var(--border-2)", background: "var(--surface-2)" }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-1 mb-3 pb-3 border-b border-[#DDD9D0]">
+      <div className="flex items-center gap-1 mb-3 pb-3" style={{ borderBottom: "1px solid var(--border-2)" }}>
         <ToolbarBtn
           onClick={() => editor?.chain().focus().toggleBold().run()}
           active={editor?.isActive("bold") ?? false}
@@ -114,7 +114,7 @@ export function JournalEditor({ content, onChange }: JournalEditorProps) {
 
         <div className="ml-auto flex items-center gap-2">
           {transcribing && (
-            <span className="text-[11px]" style={{ fontFamily: "var(--font-sans)", color: "#8A8680" }}>
+            <span className="text-[11px]" style={{ fontFamily: "var(--font-sans)", color: "var(--fg-3)" }}>
               transcribing…
             </span>
           )}
@@ -125,8 +125,8 @@ export function JournalEditor({ content, onChange }: JournalEditorProps) {
             title={recording ? "Stop recording" : "Dictate"}
             className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors duration-150 disabled:opacity-40"
             style={{
-              backgroundColor: recording ? "#1C1917" : "transparent",
-              color: recording ? "#F2EFE8" : "#3A3630",
+              backgroundColor: recording ? "var(--fg)" : "transparent",
+              color: recording ? "var(--btn-fg)" : "var(--fg-2)",
             }}
           >
             <MicIcon recording={recording} />
@@ -143,7 +143,7 @@ export function JournalEditor({ content, onChange }: JournalEditorProps) {
           className="text-[11px]"
           style={{
             fontFamily: "var(--font-sans)",
-            color: count >= LIMIT ? "#E8A8A8" : "#3A3630",
+            color: count >= LIMIT ? "#E8A8A8" : "var(--fg-2)",
           }}
         >
           {count}/{LIMIT}
@@ -171,8 +171,8 @@ function ToolbarBtn({
       title={title}
       className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors duration-150"
       style={{
-        backgroundColor: active ? "#1C1917" : "transparent",
-        color: active ? "#F2EFE8" : "#3A3630",
+        backgroundColor: active ? "var(--fg)" : "transparent",
+        color: active ? "var(--btn-fg)" : "var(--fg-2)",
       }}
     >
       {children}

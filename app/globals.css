@@ -27,26 +27,79 @@
   --radius-2xl: calc(var(--radius) * 1.8);
 }
 
+/* ── LIGHT MODE ── */
 :root {
-  --background: #F2EFE8;
-  --foreground: #1C1917;
-  --card: #FAF8F3;
-  --card-foreground: #1C1917;
-  --popover: #FAF8F3;
+  color-scheme: light;
+
+  /* shadcn tokens */
+  --background:         #FAFAF8;
+  --foreground:         #1C1917;
+  --card:               #FDFCF9;
+  --card-foreground:    #1C1917;
+  --popover:            #FDFCF9;
   --popover-foreground: #1C1917;
-  --primary: #1C1917;
-  --primary-foreground: #F2EFE8;
-  --muted: #EAE7DF;
-  --muted-foreground: #7A7670;
-  --border: #DDD9D0;
-  --input: #DDD9D0;
-  --ring: #1C1917;
-  --radius: 0.75rem;
-  --accent-calm: #A8C8A0;
-  --accent-happy: #E8C870;
+  --primary:            #1C1917;
+  --primary-foreground: #F7F5F0;
+  --muted:              #EAE7DF;
+  --muted-foreground:   #8A8680;
+  --border:             #E5E2DB;
+  --input:              #E5E2DB;
+  --ring:               #1C1917;
+  --radius:             0.75rem;
+
+  /* app-specific */
+  --bg-start:   #FAFAF8;
+  --surface:    #F5F4F1;
+  --surface-2:  #EEECEA;
+  --border-2:   #E2E0DC;
+  --fg:         #1C1917;
+  --fg-2:       #3A3630;
+  --fg-3:       #8A8680;
+  --btn-bg:     #1C1917;
+  --btn-fg:     #EDEAE5;
+  --nav-bg:     rgba(247, 245, 240, 0.95);
+
+  --accent-calm:    #A8C8A0;
+  --accent-happy:   #E8C870;
   --accent-neutral: #B8B4AE;
-  --accent-tired: #98B4C8;
+  --accent-tired:   #98B4C8;
   --accent-anxious: #C0A0C8;
+}
+
+/* ── DARK MODE ── */
+.dark {
+  color-scheme: dark;
+
+  --background:         #0C0A14;
+  --foreground:         #EDE9F8;
+  --card:               #141120;
+  --card-foreground:    #EDE9F8;
+  --popover:            #141120;
+  --popover-foreground: #EDE9F8;
+  --primary:            #EDE9F8;
+  --primary-foreground: #0C0A14;
+  --muted:              #181428;
+  --muted-foreground:   #6A6488;
+  --border:             #1C1830;
+  --input:              #1C1830;
+  --ring:               #EDE9F8;
+
+  --bg-start:   #0E0C18;
+  --surface:    #141120;
+  --surface-2:  #18152A;
+  --border-2:   #221E38;
+  --fg:         #EDE9F8;
+  --fg-2:       #C0BAD8;
+  --fg-3:       #6A6488;
+  --btn-bg:     #EDE9F8;
+  --btn-fg:     #0C0A14;
+  --nav-bg:     rgba(12, 10, 20, 0.95);
+
+  --accent-calm:    #7EB8C8;
+  --accent-happy:   #C8A050;
+  --accent-neutral: #887880;
+  --accent-tired:   #6894A8;
+  --accent-anxious: #9070A8;
 }
 
 @layer base {
@@ -64,15 +117,13 @@
 /* Scrollbar */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
 
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 
 /* TipTap */
-.ProseMirror {
-  outline: none;
-}
+.ProseMirror { outline: none; }
 .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   color: var(--muted-foreground);

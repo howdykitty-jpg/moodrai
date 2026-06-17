@@ -11,7 +11,7 @@ function clearLocalStorage() {
   localStorage.removeItem("moodrai-onboarded")
 }
 
-export default function StartPage() {
+export default function RegisterPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -21,9 +21,19 @@ export default function StartPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError("")
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.")
+      return
+    }
+
     setLoading(true)
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name: "You" } },
+    })
 
     if (error) {
       setError(error.message)
@@ -52,7 +62,7 @@ export default function StartPage() {
       `}</style>
 
       {/* Blob */}
-      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "18%" }}>
+      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "32%" }}>
         <div
           style={{
             width: 340,
@@ -71,7 +81,7 @@ export default function StartPage() {
         />
       </div>
 
-      {/* Title */}
+      {/* Text */}
       <div
         className="relative z-10 flex flex-col items-center justify-center text-center px-10"
         style={{ flex: 1 }}
@@ -86,17 +96,13 @@ export default function StartPage() {
           className="mt-5 leading-loose text-[#3A3630]"
           style={{ fontSize: "0.72rem", letterSpacing: "0.1em" }}
         >
-          Understand your mood.
-          <br />
-          Grow with everyday.
-          <br />
-          See your Aura.
+          Start your journey.
         </p>
       </div>
 
       {/* Form */}
-      <div className="relative z-10 w-full px-7 pb-14 flex flex-col gap-4 max-w-sm">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <div className="relative z-10 w-full px-7 pb-12 flex flex-col gap-3 max-w-sm">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <input
             type="email"
             value={email}
@@ -104,12 +110,11 @@ export default function StartPage() {
             placeholder="Email"
             required
             autoComplete="email"
-            className="w-full outline-none text-[13px] rounded-lg px-4 py-[14px] placeholder:text-[rgba(80,90,140,0.45)] transition-all duration-200 focus:bg-[rgba(200,210,240,0.25)]"
+            className="w-full bg-transparent outline-none text-[13px] pb-2.5 placeholder:text-[rgba(60,55,48,0.40)]"
             style={{
               fontFamily: "var(--font-sans)",
               color: "#1C1A18",
-              background: "rgba(210,218,245,0.18)",
-              border: "1px solid rgba(160,175,230,0.30)",
+              borderBottom: "1px solid rgba(60,55,48,0.30)",
               letterSpacing: "0.02em",
             }}
           />
@@ -117,22 +122,21 @@ export default function StartPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
+            placeholder="Password (min. 6 characters)"
             required
-            autoComplete="current-password"
-            className="w-full outline-none text-[13px] rounded-lg px-4 py-[14px] placeholder:text-[rgba(80,90,140,0.45)] transition-all duration-200 focus:bg-[rgba(200,210,240,0.25)]"
+            autoComplete="new-password"
+            className="w-full bg-transparent outline-none text-[13px] pb-2.5 placeholder:text-[rgba(60,55,48,0.40)]"
             style={{
               fontFamily: "var(--font-sans)",
               color: "#1C1A18",
-              background: "rgba(210,218,245,0.18)",
-              border: "1px solid rgba(160,175,230,0.30)",
+              borderBottom: "1px solid rgba(60,55,48,0.30)",
               letterSpacing: "0.02em",
             }}
           />
 
           {error && (
             <p
-              className="text-center text-[11px] pt-1"
+              className="text-center text-[11px]"
               style={{ fontFamily: "var(--font-sans)", color: "rgba(180,60,60,0.85)" }}
             >
               {error}
@@ -141,29 +145,29 @@ export default function StartPage() {
 
           <button
             type="submit"
-            disabled={loading}
-            className="mt-2 w-full rounded-full py-4 text-[10px] tracking-[0.22em] uppercase transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_32px_8px_rgba(100,110,200,0.22)] active:scale-[0.97]"
+            disabled={loading || !email || !password}
+            className="mt-1 w-full rounded-full py-3.5 text-[10px] tracking-[0.2em] uppercase transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_32px_8px_rgba(100,110,200,0.20)] active:scale-[0.97]"
             style={{
               fontFamily: "var(--font-sans)",
               backgroundColor: "#1C1A18",
               color: "rgba(255,255,255,0.95)",
             }}
           >
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? "Creating account…" : "Create account"}
           </button>
         </form>
 
         <p
-          className="text-center text-[11px] mt-2"
+          className="text-center text-[11px] mt-1"
           style={{ fontFamily: "var(--font-sans)", color: "#6B6660", letterSpacing: "0.06em" }}
         >
-          No account?{" "}
+          Already have an account?{" "}
           <Link
-            href="/register"
+            href="/login"
             style={{ color: "#3A3630" }}
             className="underline underline-offset-2"
           >
-            Create one
+            Sign in
           </Link>
         </p>
       </div>

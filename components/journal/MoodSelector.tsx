@@ -103,11 +103,11 @@ export function MoodSelector({ moods, selected, onSelect }: MoodSelectorProps) {
           style={{
             width: 68,
             paddingRight: "10px",
-            background: "linear-gradient(to right, transparent, #EDEAE5 52%)",
+            background: "linear-gradient(to right, transparent, var(--background) 52%)",
           }}
         >
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ opacity: 0.5, flexShrink: 0 }}>
-            <path d="M4.5 2.5l4 4-4 4" stroke="#1C1A18" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M4.5 2.5l4 4-4 4" stroke="var(--fg)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
       )}
@@ -127,15 +127,15 @@ export function MoodSelector({ moods, selected, onSelect }: MoodSelectorProps) {
               onClick={() => onSelect(mood.id)}
               className="flex flex-col items-center gap-2 flex-shrink-0 py-1 transition-all duration-200"
             >
-              <div style={{ position: "relative", width: 62, height: 62, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ position: "relative", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <div
                   style={{
                     position: "absolute",
-                    width: 54,
-                    height: 54,
+                    width: 38,
+                    height: 38,
                     borderRadius: BLOB_RADIUS[mood.id] ?? "50%",
                     background: gradient,
-                    filter: `blur(${mood.id === "angry" ? (active ? 5 : 3) : active ? 8 : 6}px)`,
+                    filter: `blur(${mood.id === "angry" ? (active ? 4 : 2.5) : active ? 6 : 4.5}px)`,
                     opacity: mood.id === "angry" ? (active ? 1 : 0.92) : active ? 1 : 0.78,
                     transform: active ? "scale(1.08)" : "scale(1)",
                     transition: "all 0.25s ease",
@@ -146,7 +146,7 @@ export function MoodSelector({ moods, selected, onSelect }: MoodSelectorProps) {
                 className="text-[9px] tracking-[0.08em] uppercase"
                 style={{
                   fontFamily: "var(--font-sans)",
-                  color: active ? "#1C1A18" : "#3A3630",
+                  color: active ? "var(--fg)" : "var(--fg-2)",
                   fontWeight: active ? 600 : 400,
                 }}
               >

@@ -11,7 +11,7 @@ function clearLocalStorage() {
   localStorage.removeItem("moodrai-onboarded")
 }
 
-export default function StartPage() {
+export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -52,7 +52,7 @@ export default function StartPage() {
       `}</style>
 
       {/* Blob */}
-      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "18%" }}>
+      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "32%" }}>
         <div
           style={{
             width: 340,
@@ -71,7 +71,7 @@ export default function StartPage() {
         />
       </div>
 
-      {/* Title */}
+      {/* Text */}
       <div
         className="relative z-10 flex flex-col items-center justify-center text-center px-10"
         style={{ flex: 1 }}
@@ -141,8 +141,8 @@ export default function StartPage() {
 
           <button
             type="submit"
-            disabled={loading}
-            className="mt-2 w-full rounded-full py-4 text-[10px] tracking-[0.22em] uppercase transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_32px_8px_rgba(100,110,200,0.22)] active:scale-[0.97]"
+            disabled={loading || !email || !password}
+            className="mt-2 w-full rounded-full py-4 text-[10px] tracking-[0.22em] uppercase transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_32px_8px_rgba(100,110,200,0.22)] active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
               fontFamily: "var(--font-sans)",
               backgroundColor: "#1C1A18",

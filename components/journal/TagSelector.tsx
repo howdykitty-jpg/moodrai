@@ -11,14 +11,14 @@ interface TagSelectorProps {
 
 export function TagSelector({ tags, selected, onToggle, onConfirm }: TagSelectorProps) {
   return (
-    <div className="rounded-2xl border border-[#DDD9D0] bg-[#F5F2EC] p-5">
+    <div className="rounded-2xl p-5" style={{ border: "1px solid var(--border-2)", background: "var(--surface-2)" }}>
       <p
-        className="mb-1 text-[15px] font-light text-[#1C1917]"
-        style={{ fontFamily: "var(--font-serif)" }}
+        className="mb-1 text-[15px] font-light"
+        style={{ fontFamily: "var(--font-serif)", color: "var(--fg)" }}
       >
         What was this about?
       </p>
-      <p className="mb-4 text-[13px] text-[#3A3630]" style={{ fontFamily: "var(--font-sans)" }}>
+      <p className="mb-4 text-[13px]" style={{ fontFamily: "var(--font-sans)", color: "var(--fg-2)" }}>
         Select all that apply. You can skip this.
       </p>
       <div className="flex flex-wrap gap-2 mb-5">
@@ -32,9 +32,9 @@ export function TagSelector({ tags, selected, onToggle, onConfirm }: TagSelector
               className="px-4 py-2 rounded-full text-[12px] border transition-all duration-150"
               style={{
                 fontFamily: "var(--font-sans)",
-                backgroundColor: active ? "#1C1917" : "transparent",
-                color: active ? "#EDEAE5" : "#3A3630",
-                borderColor: active ? "#1C1917" : "#DDD9D0",
+                backgroundColor: active ? "var(--fg)" : "transparent",
+                color: active ? "var(--btn-fg)" : "var(--fg-2)",
+                borderColor: active ? "var(--fg)" : "var(--border-2)",
                 letterSpacing: "0.04em",
               }}
             >
@@ -49,8 +49,8 @@ export function TagSelector({ tags, selected, onToggle, onConfirm }: TagSelector
         className="w-full rounded-full py-4 text-[11px] tracking-[0.18em] uppercase transition-colors duration-150 mt-1"
         style={{
           fontFamily: "var(--font-sans)",
-          backgroundColor: "#1C1917",
-          color: "#EDEAE5",
+          backgroundColor: "var(--fg)",
+          color: "var(--btn-fg)",
         }}
       >
         Save entry
