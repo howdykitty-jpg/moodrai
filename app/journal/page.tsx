@@ -1,10 +1,11 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useStore } from "@/store/useStore"
 import { MoodSelector } from "@/components/journal/MoodSelector"
 import { DateStrip } from "@/components/ui/DateStrip"
 import { MoodBlob } from "@/components/mood/MoodBlob"
+import { FreudChat } from "@/components/journal/FreudChat"
 import { Entry } from "@/lib/types"
 
 function todayISO() {
@@ -12,19 +13,23 @@ function todayISO() {
 }
 
 export default function JournalPage() {
-  const { settings, entries, addEntry, hydrated } = useStore()
+  const { settings, entries, addEntry, hydrated, setActiveDate, chatHistory, addChatMessage } = useStore()
   const [selectedDate, setSelectedDate] = useState(todayISO())
   const [draft, setDraft] = useState("")
   const [input, setInput] = useState("")
   const [selectedMood, setSelectedMood] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
   const [attachment, setAttachment] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
-
+  const [freudThinking, setFreudThinking] = useState(false)
   const [recording, setRecording] = useState(false)
   const [transcribing, setTranscribing] = useState(false)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    setActiveDate(selectedDate)
+  }, [selectedDate, setActiveDate])
 
   const dateEntries = entries
     .filter((e) => e.date === selectedDate)
@@ -36,11 +41,36 @@ export default function JournalPage() {
     .toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })
     .toUpperCase()
 
-  function submitInput() {
+  function submitFreud() {
     const text = input.trim()
     if (!text) return
-    setDraft((prev) => (prev ? prev + " " + text : text))
+    sendToFreud(text)
     setInput("")
+  }
+
+  async function sendToFreud(text: string) {
+    addChatMessage({ role: "user", content: text })
+    setFreudThinking(true)
+    try {
+      const res = await fetch("/api/therapist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          activeDate: selectedDate,
+          entries,
+          history: chatHistory,
+        }),
+      })
+      const data = await res.json()
+      if (data.text) {
+        addChatMessage({ role: "assistant", content: data.text })
+      }
+    } catch {
+      addChatMessage({ role: "assistant", content: "Przepraszam, coś poszło nie tak. Spróbuj ponownie." })
+    } finally {
+      setFreudThinking(false)
+    }
   }
 
   function saveEntry(moodId: string = "") {
@@ -85,7 +115,7 @@ export default function JournalPage() {
     reader.readAsDataURL(file)
   }
 
-  async function startRecording() {
+  async function startRecording(destination: "journal" | "freud") {
     let stream: MediaStream
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -108,7 +138,11 @@ export default function JournalPage() {
         const res = await fetch("/api/transcribe", { method: "POST", body: form })
         const data = await res.json()
         if (data.text) {
-          setDraft((prev) => (prev ? prev + " " + data.text : data.text))
+          if (destination === "freud") {
+            sendToFreud(data.text)
+          } else {
+            setDraft((prev) => (prev ? prev + " " + data.text : data.text))
+          }
         }
       } finally {
         setTranscribing(false)
@@ -125,15 +159,10 @@ export default function JournalPage() {
     setRecording(false)
   }
 
-  function toggleRecording() {
-    if (recording) stopRecording()
-    else startRecording()
-  }
-
   const isEmpty = hydrated && dateEntries.length === 0 && !draft && !attachment && !saved
 
   return (
-    <div className="px-5 pt-6" style={{ paddingBottom: "5rem" }}>
+    <div className="px-5 pt-6" style={{ paddingBottom: "6rem" }}>
       {/* Date strip */}
       <div className="mb-6">
         <DateStrip
@@ -162,7 +191,7 @@ export default function JournalPage() {
         </p>
       )}
 
-      {/* Draft — frameless, appears under the calendar */}
+      {/* Draft — shows after voice recording, before save */}
       {(draft || attachment) && (
         <div className="mb-10">
           {draft && (
@@ -176,12 +205,7 @@ export default function JournalPage() {
           {attachment && (
             <div className="relative mb-7 inline-block">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={attachment}
-                alt=""
-                className="rounded-2xl"
-                style={{ maxWidth: "100%", maxHeight: 260 }}
-              />
+              <img src={attachment} alt="" className="rounded-2xl" style={{ maxWidth: "100%", maxHeight: 260 }} />
               <button
                 type="button"
                 onClick={() => setAttachment(null)}
@@ -200,11 +224,7 @@ export default function JournalPage() {
           >
             How did it feel?
           </p>
-          <MoodSelector
-            moods={settings.moods}
-            selected={selectedMood}
-            onSelect={saveEntry}
-          />
+          <MoodSelector moods={settings.moods} selected={selectedMood} onSelect={saveEntry} />
           <button
             type="button"
             onClick={() => saveEntry()}
@@ -216,7 +236,7 @@ export default function JournalPage() {
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty state — mic for journal entry */}
       {isEmpty && (
         <div className="flex flex-col items-center justify-center pt-20 text-center">
           <p
@@ -228,7 +248,7 @@ export default function JournalPage() {
           <div className="relative mb-6" style={{ width: 80, height: 80 }}>
             <button
               type="button"
-              onClick={toggleRecording}
+              onClick={() => recording ? stopRecording() : startRecording("journal")}
               className="flex h-20 w-20 items-center justify-center rounded-full transition-transform duration-200 active:scale-95"
               style={{
                 background: recording ? "rgba(239,68,68,0.08)" : "var(--btn-bg)",
@@ -242,13 +262,7 @@ export default function JournalPage() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               className="absolute flex h-9 w-9 items-center justify-center rounded-full transition-transform duration-200 active:scale-95"
-              style={{
-                right: -48,
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "var(--btn-bg)",
-                color: "var(--btn-fg)",
-              }}
+              style={{ right: -48, top: "50%", transform: "translateY(-50%)", background: "var(--btn-bg)", color: "var(--btn-fg)" }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
@@ -261,10 +275,11 @@ export default function JournalPage() {
           >
             {transcribing ? "transcribing…" : recording ? "listening… tap to stop." : "tap to record what's on your mind."}
           </p>
+          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
         </div>
       )}
 
-      {/* Entries — frameless */}
+      {/* Journal entries */}
       {!hydrated ? (
         <div className="flex flex-col gap-4">
           <div className="h-5 w-3/4 rounded-full animate-pulse" style={{ background: "var(--border-2)" }} />
@@ -279,16 +294,10 @@ export default function JournalPage() {
                 <div key={entry.id}>
                   <div className="flex items-center gap-2.5 mb-3">
                     {mood && <MoodBlob moodId={mood.id} color={mood.color} size={18} />}
-                    <span
-                      className="text-[10px] tracking-[0.16em] uppercase"
-                      style={{ fontFamily: "var(--font-sans)", color: "var(--fg-3)" }}
-                    >
+                    <span className="text-[10px] tracking-[0.16em] uppercase" style={{ fontFamily: "var(--font-sans)", color: "var(--fg-3)" }}>
                       {mood?.label}
                     </span>
-                    <span
-                      className="ml-auto text-[10px]"
-                      style={{ fontFamily: "var(--font-sans)", color: "var(--fg-3)" }}
-                    >
+                    <span className="ml-auto text-[10px]" style={{ fontFamily: "var(--font-sans)", color: "var(--fg-3)" }}>
                       {new Date(entry.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>
@@ -300,11 +309,7 @@ export default function JournalPage() {
                   {entry.tags.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {entry.tags.map((t) => (
-                        <span
-                          key={t}
-                          className="rounded-full px-3 py-1 text-[11px]"
-                          style={{ fontFamily: "var(--font-sans)", border: "1px solid var(--border-2)", color: "var(--fg-2)" }}
-                        >
+                        <span key={t} className="rounded-full px-3 py-1 text-[11px]" style={{ fontFamily: "var(--font-sans)", border: "1px solid var(--border-2)", color: "var(--fg-2)" }}>
                           {t}
                         </span>
                       ))}
@@ -317,7 +322,10 @@ export default function JournalPage() {
         )
       )}
 
-{/* Bottom input bar — fixed above the nav */}
+      {/* Freud chat — always visible when there are messages */}
+      <FreudChat history={chatHistory} thinking={freudThinking} />
+
+      {/* Bottom bar — only for Freud */}
       <div
         className="fixed left-0 right-0 z-40 px-5 pb-3 pt-2"
         style={{ bottom: "max(env(safe-area-inset-bottom, 0px), 12px)", background: "transparent" }}
@@ -335,35 +343,18 @@ export default function JournalPage() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && submitInput()}
-              placeholder={transcribing ? "transcribing…" : "what's on your mind?"}
-              disabled={transcribing}
+              onKeyDown={(e) => e.key === "Enter" && submitFreud()}
+              placeholder={transcribing ? "transcribing…" : freudThinking ? "thinking…" : "tell Freud what's on your mind…"}
+              disabled={transcribing || freudThinking}
               className="w-full bg-transparent outline-none text-[14px]"
               style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: "var(--fg)" }}
             />
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFile}
-              className="hidden"
-            />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              title="Attach image"
-              className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ml-1 transition-opacity"
-              style={{ color: attachment ? "var(--fg)" : "var(--fg-3)" }}
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-              </svg>
-            </button>
             {input.trim() && (
               <button
                 type="button"
-                onClick={submitInput}
-                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ml-2"
+                onClick={submitFreud}
+                disabled={freudThinking}
+                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ml-2 disabled:opacity-40"
                 style={{ background: "var(--btn-bg)", color: "var(--btn-fg)" }}
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -375,8 +366,8 @@ export default function JournalPage() {
           </div>
           <button
             type="button"
-            onClick={toggleRecording}
-            disabled={transcribing}
+            onClick={() => recording ? stopRecording() : startRecording("freud")}
+            disabled={transcribing || freudThinking}
             className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full transition-transform duration-200 active:scale-95 disabled:opacity-40"
             style={{
               background: recording ? "rgba(239,68,68,0.08)" : "var(--btn-bg)",

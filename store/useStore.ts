@@ -2,7 +2,7 @@
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import { Entry, UserSettings } from "@/lib/types"
+import { Entry, UserSettings, ChatMessage } from "@/lib/types"
 import { DEFAULT_MOODS, DEFAULT_TAGS } from "@/constants/defaults"
 import { supabase } from "@/lib/supabase"
 
@@ -10,6 +10,11 @@ interface Store {
   entries: Entry[]
   settings: UserSettings
   hydrated: boolean
+  activeDate: string | null
+  chatHistory: ChatMessage[]
+  setActiveDate: (date: string | null) => void
+  addChatMessage: (msg: ChatMessage) => void
+  clearChatHistory: () => void
   addEntry: (entry: Entry) => Promise<void>
   updateEntry: (id: string, updates: Partial<Entry>) => Promise<void>
   deleteEntry: (id: string) => Promise<void>
@@ -30,6 +35,11 @@ export const useStore = create<Store>()(
       entries: [],
       settings: defaultSettings,
       hydrated: false,
+      activeDate: null,
+      chatHistory: [],
+      setActiveDate: (date) => set({ activeDate: date }),
+      addChatMessage: (msg) => set((state) => ({ chatHistory: [...state.chatHistory, msg] })),
+      clearChatHistory: () => set({ chatHistory: [] }),
 
       addEntry: async (entry) => {
         const { data: { user } } = await supabase.auth.getUser()

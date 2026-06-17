@@ -26,3 +26,8 @@ export interface UserSettings {
   moods: Mood[]
   tags: Tag[]
 }
+
+export interface ChatMessage {
+  role: "user" | "assistant"
+  content: string
+}
