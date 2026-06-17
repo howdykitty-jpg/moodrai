@@ -223,8 +223,9 @@ export default function JournalPage() {
               onClick={toggleRecording}
               className="flex h-20 w-20 items-center justify-center rounded-full transition-transform duration-200 active:scale-95"
               style={{
-                background: recording ? "#B43C3C" : "var(--btn-bg)",
-                color: "var(--btn-fg)",
+                background: recording ? "rgba(239,68,68,0.08)" : "var(--btn-bg)",
+                border: recording ? "2px solid #EF4444" : "none",
+                color: recording ? "#EF4444" : "var(--btn-fg)",
               }}
             >
               <MicIcon recording={recording} size={26} />
@@ -370,8 +371,9 @@ export default function JournalPage() {
             disabled={transcribing}
             className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full transition-transform duration-200 active:scale-95 disabled:opacity-40"
             style={{
-              background: recording ? "#B43C3C" : "var(--btn-bg)",
-              color: "var(--btn-fg)",
+              background: recording ? "rgba(239,68,68,0.08)" : "var(--btn-bg)",
+              border: recording ? "2px solid #EF4444" : "none",
+              color: recording ? "#EF4444" : "var(--btn-fg)",
               boxShadow: "0 2px 16px rgba(0,0,0,0.10)",
             }}
           >
