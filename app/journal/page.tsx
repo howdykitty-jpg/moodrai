@@ -43,7 +43,7 @@ export default function JournalPage() {
     setInput("")
   }
 
-  function saveWithMood(moodId: string) {
+  function saveEntry(moodId: string = "") {
     setSelectedMood(moodId)
     const imgHtml = attachment
       ? `<img src="${attachment}" alt="" style="max-width:100%;border-radius:16px;margin-top:12px;" />`
@@ -203,8 +203,16 @@ export default function JournalPage() {
           <MoodSelector
             moods={settings.moods}
             selected={selectedMood}
-            onSelect={saveWithMood}
+            onSelect={saveEntry}
           />
+          <button
+            type="button"
+            onClick={() => saveEntry()}
+            className="mt-4 text-[11px] tracking-[0.1em]"
+            style={{ fontFamily: "var(--font-sans)", color: "var(--fg-3)" }}
+          >
+            save without mood →
+          </button>
         </div>
       )}
 

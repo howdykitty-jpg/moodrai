@@ -4,6 +4,7 @@ import { useRef, useState } from "react"
 import { useStore } from "@/store/useStore"
 import { DateStrip } from "@/components/ui/DateStrip"
 import { MoodBlob } from "@/components/mood/MoodBlob"
+import { MoodSelector } from "@/components/journal/MoodSelector"
 
 function parseContent(html: string): { text: string; imgSrc: string | null } {
   const imgMatch = html.match(/<img[^>]+src="([^"]+)"/)
@@ -26,6 +27,7 @@ export default function CalendarPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState("")
   const [editImgSrc, setEditImgSrc] = useState<string | null>(null)
+  const [editMood, setEditMood] = useState<string>("")
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const editFileRef = useRef<HTMLInputElement | null>(null)
 
@@ -41,15 +43,16 @@ export default function CalendarPage() {
     day: "numeric",
   })
 
-  function startEdit(id: string, currentText: string, currentImgSrc: string | null) {
+  function startEdit(id: string, currentText: string, currentImgSrc: string | null, currentMood: string) {
     setEditingId(id)
     setEditText(currentText)
     setEditImgSrc(currentImgSrc)
+    setEditMood(currentMood)
     setConfirmDeleteId(null)
   }
 
   function saveEdit(id: string) {
-    updateEntry(id, { content: buildContent(editText.trim(), editImgSrc) })
+    updateEntry(id, { content: buildContent(editText.trim(), editImgSrc), mood: editMood })
     setEditingId(null)
   }
 
@@ -149,7 +152,7 @@ export default function CalendarPage() {
                   </span>
                   <div className="ml-auto flex items-center gap-3">
                     <button
-                      onClick={(e) => { e.stopPropagation(); isEditing ? setEditingId(null) : startEdit(entry.id, text, imgSrc) }}
+                      onClick={(e) => { e.stopPropagation(); isEditing ? setEditingId(null) : startEdit(entry.id, text, imgSrc, entry.mood) }}
                       style={{ color: isEditing ? "var(--fg)" : "var(--fg-3)" }}
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -246,6 +249,17 @@ export default function CalendarPage() {
                       </button>
                     )}
                     <input ref={editFileRef} type="file" accept="image/*" onChange={handleEditFile} className="hidden" />
+                    {/* Mood selector */}
+                    <div>
+                      <p className="mb-2 text-[10px] tracking-[0.18em] uppercase" style={{ fontFamily: "var(--font-sans)", color: "var(--fg-3)" }}>
+                        mood
+                      </p>
+                      <MoodSelector
+                        moods={settings.moods}
+                        selected={editMood || null}
+                        onSelect={(id) => setEditMood(editMood === id ? "" : id)}
+                      />
+                    </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => saveEdit(entry.id)}
