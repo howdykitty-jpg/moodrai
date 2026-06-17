@@ -18,58 +18,70 @@ export function FreudChat({ history, thinking }: Props) {
   if (history.length === 0 && !thinking) return null
 
   return (
-    <div className="flex flex-col gap-5 mb-4">
-      {history.map((msg, i) => (
-        <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-          {msg.role === "assistant" && (
-            <span
-              className="mr-2 mt-1 text-[11px] tracking-[0.1em] uppercase flex-shrink-0"
-              style={{ fontFamily: "var(--font-sans)", color: "var(--fg-3)" }}
-            >
-              Freud
-            </span>
-          )}
-          <div
-            className="max-w-[85%] text-[15px] leading-[1.65]"
-            style={{
-              fontFamily: "var(--font-serif)",
-              color: msg.role === "user" ? "var(--fg-3)" : "var(--fg)",
-              fontStyle: msg.role === "user" ? "italic" : "normal",
-              textAlign: msg.role === "user" ? "right" : "left",
-            }}
-          >
-            {msg.content}
+    <div
+      className="fixed left-0 right-0 z-30 overflow-y-auto"
+      style={{
+        bottom: "calc(max(env(safe-area-inset-bottom, 0px), 12px) + 60px)",
+        maxHeight: "45vh",
+        background: "var(--surface-2)",
+        borderTop: "1px solid var(--border-2)",
+        padding: "16px 20px 8px",
+      }}
+    >
+      <div className="mx-auto max-w-md flex flex-col gap-4">
+        <p
+          className="text-[9px] tracking-[0.22em] uppercase mb-1"
+          style={{ fontFamily: "var(--font-sans)", color: "var(--fg-3)" }}
+        >
+          Sigmund Freud
+        </p>
+
+        {history.map((msg, i) => (
+          <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            {msg.role === "user" ? (
+              <p
+                className="max-w-[80%] text-[14px] leading-[1.6]"
+                style={{
+                  fontFamily: "var(--font-serif)",
+                  fontStyle: "italic",
+                  color: "var(--fg-3)",
+                  textAlign: "right",
+                }}
+              >
+                {msg.content}
+              </p>
+            ) : (
+              <p
+                className="max-w-[88%] text-[15px] leading-[1.7]"
+                style={{
+                  fontFamily: "var(--font-serif)",
+                  color: "var(--fg)",
+                }}
+              >
+                {msg.content}
+              </p>
+            )}
           </div>
-        </div>
-      ))}
+        ))}
 
-      {thinking && (
-        <div className="flex justify-start items-center gap-2">
-          <span
-            className="text-[11px] tracking-[0.1em] uppercase"
-            style={{ fontFamily: "var(--font-sans)", color: "var(--fg-3)" }}
-          >
-            Freud
-          </span>
-          <ThinkingDots />
-        </div>
-      )}
+        {thinking && <ThinkingDots />}
 
-      <div ref={bottomRef} />
+        <div ref={bottomRef} />
+      </div>
     </div>
   )
 }
 
 function ThinkingDots() {
   return (
-    <div className="flex items-center gap-1" aria-label="Freud pisze...">
+    <div className="flex items-center gap-1.5" aria-label="Freud pisze...">
       {[0, 1, 2].map((i) => (
         <span
           key={i}
           className="inline-block rounded-full"
           style={{
-            width: 5,
-            height: 5,
+            width: 4,
+            height: 4,
             background: "var(--fg-3)",
             animation: `freud-dot 1.2s ease-in-out ${i * 0.2}s infinite`,
           }}

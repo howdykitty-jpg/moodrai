@@ -162,7 +162,7 @@ export default function JournalPage() {
   const isEmpty = hydrated && dateEntries.length === 0 && !draft && !attachment && !saved
 
   return (
-    <div className="px-5 pt-6" style={{ paddingBottom: "6rem" }}>
+    <div className="px-5 pt-6" style={{ paddingBottom: chatHistory.length > 0 || freudThinking ? "calc(45vh + 80px)" : "6rem" }}>
       {/* Date strip */}
       <div className="mb-6">
         <DateStrip
