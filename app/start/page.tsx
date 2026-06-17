@@ -52,7 +52,7 @@ export default function StartPage() {
       `}</style>
 
       {/* Blob */}
-      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "18%" }}>
+      <div className="absolute inset-0 flex items-start justify-center" style={{ paddingTop: "2%" }}>
         <div
           style={{
             width: 340,
