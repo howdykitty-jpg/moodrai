@@ -29,6 +29,7 @@ export default function JournalPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const freudInputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     setActiveDate(selectedDate)
@@ -54,6 +55,9 @@ export default function JournalPage() {
     if (!text) return
     sendToFreud(text)
     setInput("")
+    if (freudInputRef.current) {
+      freudInputRef.current.style.height = "auto"
+    }
     setChatExpanded(true)
   }
 
@@ -314,7 +318,7 @@ export default function JournalPage() {
                 ? <FreudChatMessages history={chatHistory} thinking={freudThinking} />
                 : (
                   <p className="text-[14px] leading-[1.7]" style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: "var(--fg-3)" }}>
-                    Słucham…
+                    Usiądź wygodnie i mów. Nieświadomość nie lubi pośpiechu.
                   </p>
                 )
               }
@@ -329,22 +333,35 @@ export default function JournalPage() {
         >
           <div className="mx-auto flex max-w-md items-center gap-3">
             <div
-              className="flex flex-1 items-center rounded-full px-5"
+              className="flex flex-1 items-end rounded-[23px] px-5 py-[11px]"
               style={{
                 border: "1px solid var(--border-2)",
                 background: "var(--surface-2)",
-                height: 46,
               }}
             >
-              <input
+              <textarea
+                ref={freudInputRef}
+                rows={1}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && submitFreud()}
+                onChange={(e) => {
+                  setInput(e.target.value)
+                  const el = e.target
+                  el.style.height = "auto"
+                  const maxH = Math.round(14 * 1.55 * 4)
+                  el.style.height = Math.min(el.scrollHeight, maxH) + "px"
+                  el.style.overflowY = el.scrollHeight > maxH ? "auto" : "hidden"
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault()
+                    submitFreud()
+                  }
+                }}
                 onFocus={() => setChatExpanded(true)}
                 placeholder={transcribing ? "transcribing…" : freudThinking ? "thinking…" : "tell Freud what's on your mind…"}
                 disabled={transcribing || freudThinking}
-                className="w-full bg-transparent outline-none text-[14px]"
-                style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: "var(--fg)" }}
+                className="w-full bg-transparent outline-none text-[14px] resize-none leading-[1.55]"
+                style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: "var(--fg)", overflowY: "hidden" }}
               />
               {input.trim() && (
                 <button type="button" onClick={submitFreud} disabled={freudThinking}
